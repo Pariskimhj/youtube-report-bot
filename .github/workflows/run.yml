@@ -23,7 +23,7 @@ jobs:
 
       - name: 코드 실행
         env:
-          YOUTUBE_API_KEY: ${{ secrets.API_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
