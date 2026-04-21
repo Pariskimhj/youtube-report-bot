@@ -1,10 +1,11 @@
 name: TEST
 
 on:
-  push:
+  schedule:
+    - cron: '* * * * *'   # 1분마다
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "HELLO"
+      - run: echo "SCHEDULE RUN"
