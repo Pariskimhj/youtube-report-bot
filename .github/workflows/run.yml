@@ -2,7 +2,7 @@ name: Monthly YouTube Report
 
 on:
   schedule:
-    - cron: '0 1 1 * *'   # 매월 1일 오전 10시 (한국 기준)
+    - cron: '* * * * *'   # 매월 1일 오전 10시 (한국 기준)
   workflow_dispatch:
 
 jobs:
