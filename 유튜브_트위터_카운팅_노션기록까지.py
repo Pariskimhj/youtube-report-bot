@@ -201,7 +201,7 @@ except Exception as e:
 # 🚀 3. Notion 저장
 # ================================
 save_to_notion("유튜브", subscriber_count, total_view_count, yt_likes, yt_comments)
-save_to_notion("X", x_followers, 0, x_likes, x_comments)
+save_to_notion("트위터", x_followers, 0, x_likes, x_comments)
 
 # ================================
 # 📊 결과 출력
