@@ -178,6 +178,12 @@ x_headers = {
 # USER ID
 user_url = f"https://api.x.com/2/users/by/username/{X_USERNAME}"
 user_res = requests.get(user_url, headers=x_headers).json()
+
+print("X USER 응답:", user_res)
+
+if "data" not in user_res:
+    raise Exception(f"X API 에러: {user_res}")
+
 USER_ID = user_res["data"]["id"]
 
 # 팔로워
