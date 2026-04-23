@@ -35,7 +35,7 @@ headers = {
 }
 
 # ================================
-# 🔍 기존 페이지 찾기 (월 + 채널)
+# 🔍 기존 페이지 찾기
 # ================================
 def find_existing_page(channel_name):
     query_url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
@@ -45,15 +45,11 @@ def find_existing_page(channel_name):
             "and": [
                 {
                     "property": "월",
-                    "title": {
-                        "equals": month_value
-                    }
+                    "title": {"equals": month_value}
                 },
                 {
                     "property": "채널",
-                    "select": {
-                        "equals": channel_name
-                    }
+                    "select": {"equals": channel_name}
                 }
             ]
         }
@@ -81,18 +77,10 @@ def save_to_notion(channel_name, subs, views, likes, comments):
         "채널": {
             "select": {"name": channel_name}
         },
-        "구독자": {
-            "number": subs
-        },
-        "누적 조회수": {
-            "number": views
-        },
-        "좋아요": {
-            "number": likes
-        },
-        "댓글": {
-            "number": comments
-        }
+        "구독자": {"number": subs},
+        "누적 조회수": {"number": views},
+        "좋아요": {"number": likes},
+        "댓글": {"number": comments}
     }
 
     if existing_page:
@@ -108,7 +96,7 @@ def save_to_notion(channel_name, subs, views, likes, comments):
         print(f"{channel_name} → 신규 생성 완료")
 
 # ================================
-# 🔵 1. 유튜브 데이터 수집
+# 🔵 1. 유튜브 데이터
 # ================================
 channel_url = "https://www.googleapis.com/youtube/v3/channels"
 params = {
@@ -169,47 +157,48 @@ for i in range(0, len(video_ids), 50):
         yt_comments += int(stats.get('commentCount', 0))
 
 # ================================
-# ⚫ 2. X 데이터 수집
+# ⚫ 2. X 데이터 (에러 안전 처리)
 # ================================
-x_headers = {
-    "Authorization": f"Bearer {X_BEARER_TOKEN}"
-}
-
-# USER ID
-user_url = f"https://api.x.com/2/users/by/username/{X_USERNAME}"
-user_res = requests.get(user_url, headers=x_headers).json()
-
-print("X USER 응답:", user_res)
-
-if "data" not in user_res:
-    raise Exception(f"X API 에러: {user_res}")
-
-USER_ID = user_res["data"]["id"]
-
-# 팔로워
-user_info_url = f"https://api.x.com/2/users/{USER_ID}?user.fields=public_metrics"
-user_info = requests.get(user_info_url, headers=x_headers).json()
-
-x_followers = user_info["data"]["public_metrics"]["followers_count"]
-
-# 트윗 데이터
-tweets_url = f"https://api.x.com/2/users/{USER_ID}/tweets?tweet.fields=public_metrics&max_results=100"
-tweets_res = requests.get(tweets_url, headers=x_headers).json()
-
-tweets = tweets_res.get("data", [])
-
+x_followers = 0
 x_likes = 0
 x_comments = 0
-x_retweets = 0
 
-for t in tweets:
-    m = t["public_metrics"]
-    x_likes += m.get("like_count", 0)
-    x_comments += m.get("reply_count", 0)
-    x_retweets += m.get("retweet_count", 0)
+try:
+    x_headers = {
+        "Authorization": f"Bearer {X_BEARER_TOKEN}"
+    }
+
+    user_url = f"https://api.x.com/2/users/by/username/{X_USERNAME}"
+    user_res = requests.get(user_url, headers=x_headers).json()
+
+    print("X USER 응답:", user_res)
+
+    if "data" in user_res:
+        USER_ID = user_res["data"]["id"]
+
+        user_info_url = f"https://api.x.com/2/users/{USER_ID}?user.fields=public_metrics"
+        user_info = requests.get(user_info_url, headers=x_headers).json()
+
+        x_followers = user_info["data"]["public_metrics"]["followers_count"]
+
+        tweets_url = f"https://api.x.com/2/users/{USER_ID}/tweets?tweet.fields=public_metrics&max_results=100"
+        tweets_res = requests.get(tweets_url, headers=x_headers).json()
+
+        tweets = tweets_res.get("data", [])
+
+        for t in tweets:
+            m = t["public_metrics"]
+            x_likes += m.get("like_count", 0)
+            x_comments += m.get("reply_count", 0)
+
+    else:
+        print("❌ X API 오류 - 데이터 없음 (크레딧 또는 권한 문제)")
+
+except Exception as e:
+    print("❌ X 처리 중 오류 발생:", e)
 
 # ================================
-# 🚀 3. Notion 저장 실행
+# 🚀 3. Notion 저장
 # ================================
 save_to_notion("유튜브", subscriber_count, total_view_count, yt_likes, yt_comments)
 save_to_notion("X", x_followers, 0, x_likes, x_comments)
@@ -228,4 +217,3 @@ print("\n[X]")
 print("팔로워:", x_followers)
 print("좋아요:", x_likes)
 print("댓글:", x_comments)
-print("리트윗:", x_retweets)
