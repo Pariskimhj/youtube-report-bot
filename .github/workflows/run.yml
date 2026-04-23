@@ -1,8 +1,9 @@
 name: Monthly YouTube Report
 
 on:
+  push:
   schedule:
-    - cron: '*/5 * * * *'   # 5분마다 실행
+    - cron: '0 0 1 * *'
   workflow_dispatch:
 
 jobs:
