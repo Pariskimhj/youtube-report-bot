@@ -1,9 +1,9 @@
-name: Monthly YouTube Report
+name: Monthly SNS Report
 
 on:
   push:
   schedule:
-    - cron: '0 0 1 * *'
+    - cron: '*/5 * * * *'   # 5분마다 실행
   workflow_dispatch:
 
 jobs:
@@ -28,4 +28,6 @@ jobs:
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
-        run: python "유튜브_카운팅_노션기록까지.py"
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_USERNAME: ${{ secrets.X_USERNAME }}
+        run: python "유튜브_트위터_카운팅_노션기록까지.py"
