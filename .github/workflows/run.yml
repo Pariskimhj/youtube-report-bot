@@ -3,7 +3,7 @@ name: Monthly SNS Report
 on:
   push:
   schedule:
-    - cron: '*/5 * * * *'   # 5분마다 실행
+    - cron: '0 0 1 * *'   # 매월 1일 실행
   workflow_dispatch:
 
 jobs:
