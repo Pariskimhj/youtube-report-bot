@@ -30,4 +30,4 @@ jobs:
           DATABASE_ID: ${{ secrets.DATABASE_ID }}
           X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
           X_USERNAME: ${{ secrets.X_USERNAME }}
-        run: python "유튜브_트위터_카운팅_노션기록까지.py"
+        run: python "유튜브_카운팅_노션기록까지.py"
